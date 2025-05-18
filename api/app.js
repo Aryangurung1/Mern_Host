@@ -16,7 +16,6 @@ import agentRoutes from './routes/agent.routes.js';
 import propertiesRoutes from './routes/properties.js';
 import userRoutes from './routes/user.routes.js';
 import chatRoutes from './routes/chat.routes.js';
-import connectToDatabase from './db/db.js';
 import createAdminUser from './controllers/auth.controller.js';
 
 // Load environment variables
@@ -66,15 +65,16 @@ const app = express();
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests from localhost, 127.0.0.1, and deployed domains
-    if (!origin || 
-        origin.startsWith('http://localhost:') || 
-        origin.startsWith('http://127.0.0.1:') ||
-        origin.startsWith('http://localhost:5175') ||
-        origin.startsWith('http://localhost:5008') ||
-        origin === 'https://gharelu.vercel.app' ||
-        origin === 'http://gharelu.vercel.app' ||
-        origin.includes('gharelu-fbddo66md-segaryus-projects.vercel.app') ||
-        origin.includes('vercel.app')) {
+    if (!origin ||
+      origin.startsWith('http://localhost:') ||
+      origin.startsWith('http://127.0.0.1:') ||
+      origin.startsWith('http://localhost:5175') ||
+      origin.startsWith('http://localhost:5008') ||
+      origin === 'https://gharelu.vercel.app' ||
+      origin === 'http://34.202.114.248:5173' ||
+      origin === 'http://gharelu.vercel.app' ||
+      origin.includes('gharelu-fbddo66md-segaryus-projects.vercel.app') ||
+      origin.includes('vercel.app')) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
@@ -84,9 +84,9 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
-    'Content-Type', 
-    'Authorization', 
-    'X-Requested-With', 
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
     'Accept',
     'Origin',
     'Cache-Control',
@@ -152,15 +152,15 @@ app.use('/api/chat', chatRoutes);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  
+
   if (err.name === 'MulterError') {
-    return res.status(400).json({ 
+    return res.status(400).json({
       message: 'File upload error',
       error: err.message
     });
   }
 
-  res.status(500).json({ 
+  res.status(500).json({
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
@@ -186,20 +186,21 @@ const startServer = async (port) => {
     }
 
     await createAdminUser();
-    
+
     return new Promise((resolve, reject) => {
       // Create HTTP server
       const httpServer = createServer(app);
-      
+
       // Initialize Socket.io
       const io = new Server(httpServer, {
         cors: {
           origin: [
-            'http://localhost:5175', 
-            'http://127.0.0.1:5175', 
-            'http://localhost:5009', 
+            'http://localhost:5175',
+            'http://127.0.0.1:5175',
+            'http://localhost:5009',
             'http://127.0.0.1:5009',
             'https://gharelu.vercel.app',
+            'http://34.202.114.248:5173',
             'http://gharelu.vercel.app',
             'https://gharelu-fbddo66md-segaryus-projects.vercel.app',
             /\.vercel\.app$/
@@ -208,45 +209,45 @@ const startServer = async (port) => {
           credentials: true
         }
       });
-      
+
       // Socket.io connection handler
       io.on('connection', (socket) => {
         console.log('New client connected:', socket.id);
-        
+
         // Join a chat room
         socket.on('join_chat', (chatId) => {
           socket.join(chatId);
           console.log(`User joined chat: ${chatId}`);
         });
-        
+
         // Leave a chat room
         socket.on('leave_chat', (chatId) => {
           socket.leave(chatId);
           console.log(`User left chat: ${chatId}`);
         });
-        
+
         // Send a message
         socket.on('send_message', (messageData) => {
           console.log('Message received:', messageData);
           io.to(messageData.chatId).emit('receive_message', messageData);
         });
-        
+
         // User is typing
         socket.on('typing', (data) => {
           socket.to(data.chatId).emit('typing', data);
         });
-        
+
         // User stopped typing
         socket.on('stop_typing', (data) => {
           socket.to(data.chatId).emit('stop_typing', data);
         });
-        
+
         // Handle disconnection
         socket.on('disconnect', () => {
           console.log('Client disconnected:', socket.id);
         });
       });
-      
+
       // Start the server
       server = httpServer.listen(port, () => {
         console.log(`✅ Server is running on port ${port}`);

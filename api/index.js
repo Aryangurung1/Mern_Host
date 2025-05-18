@@ -5,7 +5,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import multer from 'multer';
 
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/user.js';
@@ -25,7 +24,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173' || 'https://gharelu.vercel.app',
+  origin: process.env.CLIENT_URL || 'http://localhost:5173' || 'https://gharelu.vercel.app' || 'http://34.202.114.248:5173',
   credentials: true
 }));
 
@@ -54,7 +53,7 @@ app.use((err, req, res, next) => {
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log('Connected to MongoDB');
-    
+
     // Start server
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, () => {

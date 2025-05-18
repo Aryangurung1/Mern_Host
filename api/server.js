@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 // Create Express app
 const app = express();
-const PORT = process.env.PORT || 5010;
+const PORT = process.env.PORT || 5008;
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
