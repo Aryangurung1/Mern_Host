@@ -71,7 +71,8 @@ app.use(cors({
         origin.startsWith('http://127.0.0.1:') ||
         origin.startsWith('http://localhost:5175') ||
         origin.startsWith('http://localhost:5008') ||
-        origin === 'https://gharelu.vercel.app') {
+        origin === 'https://gharelu.vercel.app' ||
+        origin === 'http://gharelu.vercel.app') {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
@@ -191,7 +192,14 @@ const startServer = async (port) => {
       // Initialize Socket.io
       const io = new Server(httpServer, {
         cors: {
-          origin: ['http://localhost:5175', 'http://127.0.0.1:5175', 'http://localhost:5009', 'http://127.0.0.1:5009'],
+          origin: [
+            'http://localhost:5175', 
+            'http://127.0.0.1:5175', 
+            'http://localhost:5009', 
+            'http://127.0.0.1:5009',
+            'https://gharelu.vercel.app',
+            'http://gharelu.vercel.app'
+          ],
           methods: ['GET', 'POST'],
           credentials: true
         }
