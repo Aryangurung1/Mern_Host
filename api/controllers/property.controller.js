@@ -101,3 +101,19 @@ export const deleteProperty = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get featured properties
+export const getFeaturedProperties = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6;
+    const properties = await Property.find({ featured: true })
+      .populate('agent', 'username email fullName agentRequest.profilePhotoUrl agentRequest.phone agentRequest.specialization isAgent')
+      .select('-__v')
+      .limit(limit);
+
+    res.status(200).json(properties);
+  } catch (error) {
+    console.error('Error fetching featured properties:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

@@ -25,6 +25,10 @@ const propertySchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  featured: {
+    type: Boolean,
+    default: false
+  },
   location: {
     street: {
       type: String,
@@ -131,5 +135,6 @@ propertySchema.index({ type: 1 });
 propertySchema.index({ status: 1 });
 propertySchema.index({ agent: 1 });
 propertySchema.index({ 'location.city': 1 });
+propertySchema.index({ featured: 1 });
 
 export default propertySchema; 

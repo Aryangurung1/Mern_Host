@@ -65,12 +65,13 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests from localhost and 127.0.0.1 with any port
+    // Allow requests from localhost, 127.0.0.1, and deployed domains
     if (!origin || 
         origin.startsWith('http://localhost:') || 
         origin.startsWith('http://127.0.0.1:') ||
         origin.startsWith('http://localhost:5175') ||
-        origin.startsWith('http://localhost:5008')) {
+        origin.startsWith('http://localhost:5008') ||
+        origin === 'https://gharelu.vercel.app') {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
