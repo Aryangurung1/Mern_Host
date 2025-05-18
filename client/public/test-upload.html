@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test File Upload</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; }
+    button { padding: 10px 15px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Test Property Upload</h1>
+  
+  <form id="uploadForm" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" value="Test Property" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" required>Test Description</textarea>
+    </div>
+    
+    <div class="form-group">
+      <label for="type">Type</label>
+      <select id="type" name="type" required>
+        <option value="house">House</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" name="status" required>
+        <option value="for-sale">For Sale</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input type="number" id="price" name="price" value="100000" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="location.street">Street</label>
+      <input type="text" id="location.street" name="location.street" value="123 Test St" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="location.city">City</label>
+      <input type="text" id="location.city" name="location.city" value="Test City" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="location.state">State</label>
+      <input type="text" id="location.state" name="location.state" value="Test State" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="location.zipCode">Zip Code</label>
+      <input type="text" id="location.zipCode" name="location.zipCode" value="12345" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="propertyImages">Images (Select at least one)</label>
+      <input type="file" id="propertyImages" name="propertyImages" multiple accept="image/*" required>
+    </div>
+    
+    <button type="submit">Submit</button>
+  </form>
+  
+  <div id="result" style="margin-top: 20px;"></div>
+  
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const resultDiv = document.getElementById('result');
+      
+      try {
+        resultDiv.textContent = 'Uploading...';
+        
+        // Get token from localStorage
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+          resultDiv.textContent = 'Error: No authentication token found. Please log in first.';
+          return;
+        }
+        
+        const response = await fetch('http://localhost:5008/api/agent/properties', {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          resultDiv.textContent = 'Success! Property created with ID: ' + data._id;
+        } else {
+          resultDiv.textContent = 'Error: ' + data.message;
+        }
+      } catch (error) {
+        resultDiv.textContent = 'Error: ' + error.message;
+      }
+    });
+  </script>
+</body>
+</html> 
