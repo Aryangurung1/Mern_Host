@@ -72,7 +72,9 @@ app.use(cors({
         origin.startsWith('http://localhost:5175') ||
         origin.startsWith('http://localhost:5008') ||
         origin === 'https://gharelu.vercel.app' ||
-        origin === 'http://gharelu.vercel.app') {
+        origin === 'http://gharelu.vercel.app' ||
+        origin.includes('gharelu-fbddo66md-segaryus-projects.vercel.app') ||
+        origin.includes('vercel.app')) {
       callback(null, true);
     } else {
       console.log('CORS blocked origin:', origin);
@@ -198,7 +200,9 @@ const startServer = async (port) => {
             'http://localhost:5009', 
             'http://127.0.0.1:5009',
             'https://gharelu.vercel.app',
-            'http://gharelu.vercel.app'
+            'http://gharelu.vercel.app',
+            'https://gharelu-fbddo66md-segaryus-projects.vercel.app',
+            /\.vercel\.app$/
           ],
           methods: ['GET', 'POST'],
           credentials: true
